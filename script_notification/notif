@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# File: notif
+# Usage:
+#   notif <command> [args...]                 # simplest: title defaults to command, message "finished"
+#   notif [title] [message ...] -- <command> [args...]
+
+topic=${desktop_notif_topic}
+
+title=""
+message=""
+cmd=()
+
+# Detect separator
+has_sep=0
+for arg in "$@"; do
+  [[ "$arg" == "--" ]] && has_sep=1 && break
+done
+
+if [[ $has_sep -eq 1 ]]; then
+  # Parse [title] [message ...] -- command...
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --)
+        shift
+        cmd=("$@")
+        break
+        ;;
+      *)
+        if [[ -z "$title" ]]; then
+          title="$1"
+        else
+          message+=" $1"
+        fi
+        shift
+        ;;
+    esac
+  done
+else
+  # No separator: all args are the command
+  cmd=("$@")
+fi
+
+# Defaults
+if [[ -z "$title" ]]; then
+  if [[ ${#cmd[@]} -gt 0 ]]; then
+    title="${cmd[0]}"
+  else
+    title="job"
+  fi
+fi
+[[ -z "$message" ]] && message="finished"
+
+# Require a command
+if [[ ${#cmd[@]} -eq 0 ]]; then
+  echo "Usage: notif [title] [message ...] -- <command> [args...]  OR  notif <command> [args...]" >&2
+  exit 2
+fi
+
+# Run command
+"${cmd[@]}"
+status=$?
+
+# Notify
+curl -s -d "${message# }" -H "Title: $title" "https://ntfy.sh/$topic" >/dev/null
+
+exit $status
+
