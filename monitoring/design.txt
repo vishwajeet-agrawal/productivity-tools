@@ -1,0 +1,25 @@
+Self monitoring system
+
+Specification: 
+
+There is a pop up to log what happened in the past hour (or hours) depeneding on when was the last log entered. 
+
+I should see the following in pop up:
+	- the last x (default value = 2) entries that I made with their timestamp and first y (default = 100) first characters of what I logged. 
+	- a space to log the current. 
+
+The cursor should be automatically placed on the writing box so that when I start typing something, it automatically gets to be typed in the box. 
+
+Shift + Enter should simulate \n in the text box. Enter should simulate submitting the log. 
+
+Have two buttons [Log] [Cancel]. Cancel cancels the popup (doesn't do anything) and [Log] just simulates enter.
+
+The new entry is simply appended to log file with the timestamp. 
+
+If no response from the user in 15 minutes, close the popup and don't log anything.
+
+The log is stored in a single logs file. 
+
+This script should be run as a cron job at specific time intervals (hardcode the time : every hour of the day)
+
+The os is mac, so cron job should be set up according to what works in mac. 

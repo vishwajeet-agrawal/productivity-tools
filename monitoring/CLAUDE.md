@@ -1,0 +1,1 @@
+- do not make scripts executable unless I specifically ask.
